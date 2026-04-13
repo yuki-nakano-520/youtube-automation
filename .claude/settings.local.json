@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pip install:*)",
+      "Read(//mnt/c/Users/nakan/work/other/**)",
+      "Bash(python3 scheduler.py --now)",
+      "Bash(wsl ls:*)",
+      "Bash(wsl --list)",
+      "Bash(wsl -d Ubuntu -- bash -c \"cd /mnt/c/Users/nakan/work/other/youtube-automation && python3 scheduler.py --now 2>&1\")",
+      "Bash(dir \"C:\\\\Users\\\\nakan\\\\work\\\\other\\\\youtube-automation\")",
+      "Bash(dir /a \"C:\\\\Users\\\\nakan\\\\work\\\\other\\\\youtube-automation\\\\.gitignore\")",
+      "Bash(cmd /c \"dir /a C:\\\\Users\\\\nakan\\\\work\\\\other\\\\youtube-automation\")",
+      "Bash(cmd /c \"dir /a /b C:\\\\Users\\\\nakan\\\\work\\\\other\\\\youtube-automation\")"
+    ]
+  }
+}
