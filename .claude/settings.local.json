@@ -10,7 +10,8 @@
       "Bash(dir \"C:\\\\Users\\\\nakan\\\\work\\\\other\\\\youtube-automation\")",
       "Bash(dir /a \"C:\\\\Users\\\\nakan\\\\work\\\\other\\\\youtube-automation\\\\.gitignore\")",
       "Bash(cmd /c \"dir /a C:\\\\Users\\\\nakan\\\\work\\\\other\\\\youtube-automation\")",
-      "Bash(cmd /c \"dir /a /b C:\\\\Users\\\\nakan\\\\work\\\\other\\\\youtube-automation\")"
+      "Bash(cmd /c \"dir /a /b C:\\\\Users\\\\nakan\\\\work\\\\other\\\\youtube-automation\")",
+      "Bash(python -c \"from PIL import Image; img = Image.open\\('C:/Users/nakan/work/other/youtube-automation/assets/icon.png'\\); print\\(img.size\\)\")"
     ]
   }
 }
