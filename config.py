@@ -31,7 +31,8 @@ POST_GENRES_CYCLE = [
     g.strip()
     for g in os.getenv("POST_GENRES_CYCLE", "trivia,history,science,money,english").split(",")
 ]
-POST_TIMES = [t.strip() for t in os.getenv("POST_TIMES", "09:00").split(",")]
+# 視聴者アクティブ時間帯に合わせたデフォルト投稿時刻（朝7時・夜20時）
+POST_TIMES = [t.strip() for t in os.getenv("POST_TIMES", "07:00,20:00").split(",")]
 POST_DAYS = [d.strip() for d in os.getenv("POST_DAYS", "mon,tue,wed,thu,fri,sat,sun").split(",")]
 POST_PRIVACY = os.getenv("POST_PRIVACY", "public")
 POST_COUNT_PER_RUN = int(os.getenv("POST_COUNT_PER_RUN", "1"))

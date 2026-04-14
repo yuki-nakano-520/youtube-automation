@@ -48,7 +48,10 @@ def _save_topic(topic: str) -> None:
     )
 
 
-def generate_script(genre_key: str = "trivia") -> ShortScript:
+def generate_script(
+    genre_key: str = "trivia",
+    trending_topics: list[str] | None = None,
+) -> ShortScript:
     genre_label = GENRES.get(genre_key, GENRES["trivia"])
     client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
@@ -61,17 +64,32 @@ def generate_script(genre_key: str = "trivia") -> ShortScript:
             + "\n".join(f"- {t}" for t in recent)
         )
 
+    trending_section = ""
+    if trending_topics:
+        trending_section = (
+            "\n\n【今日の日本のトレンドキーワード（関連する豆知識があれば積極活用）】\n"
+            + "\n".join(f"- {t}" for t in trending_topics[:5])
+        )
+
     prompt = f"""YouTubeショート動画（30〜45秒）用の「{genre_label}」スクリプトを作成してください。
 
 以下のJSON形式のみで返してください：
 {{
   "topic": "今回のトピック（例：カタツムリの歯は1万本以上ある）",
-  "hook": "冒頭（1〜2文。「〇〇って知ってた？」のように視聴者を引き込む）",
+  "hook": "冒頭（1〜2文。以下のパターンを参考に視聴者を強く引き込む）",
   "body": "本題（3〜4文。具体的な数字・事実を含む豆知識）",
   "outro": "締め（1文。「〜だから〇〇なんだよ！」のような印象に残る言い方）",
   "hashtags": ["ハッシュタグ1", "ハッシュタグ2", "ハッシュタグ3", "ハッシュタグ4", "ハッシュタグ5"],
   "search_query": "トピックに関連する英語の映像検索キーワード（2〜3語、例：snail close up nature）"
 }}
+
+フックのパターン例（必ずどれか1つに近い形を使う）：
+- 「〇〇って知ってた？実はヤバいことになってるんだよ！」
+- 「え、これ知らないの？〇〇の衝撃の事実！」
+- 「絶対に信じられない！〇〇の真実がヤバすぎる！」
+- 「今すぐ友達に教えたい！〇〇って実は〜」
+- 「학교では教えてくれない！〇〇の本当の姿とは？」
+ポイント：疑問形・驚き・緊急感・損得感を必ず入れる
 
 条件：
 - 動物・食べ物・宇宙・人体・歴史・言語・テクノロジーなど幅広いジャンルから選ぶ
@@ -80,7 +98,7 @@ def generate_script(genre_key: str = "trivia") -> ShortScript:
 - わかりやすい口語体の日本語
 - 「えっ本当に？」と思える驚きのある内容
 - 具体的な数字を必ず1つ以上含める
-- JSONのみを返す（コードブロック不要）{avoid_section}"""
+- JSONのみを返す（コードブロック不要）{trending_section}{avoid_section}"""
 
     response = client.messages.create(
         model="claude-haiku-4-5",

@@ -11,6 +11,8 @@ from pathlib import Path
 from config import DEFAULT_GENRE, GENRES, OUTPUT_DIR, YOUTUBE_PRIVACY_STATUS
 from pipeline.media_fetcher import fetch_background_videos
 from pipeline.script_generator import ShortScript, generate_script
+from pipeline.thumbnail_generator import generate_thumbnail
+from pipeline.trend_fetcher import fetch_trending_topics
 from pipeline.video_generator import create_short
 from pipeline.voice_generator import VoicevoxError, generate_voice_sections
 from pipeline.youtube_uploader import YouTubeUploadError, upload_short
@@ -30,6 +32,14 @@ def run(
     print(f"\n🎬 YouTube Shorts 自動生成 — {GENRES[genre]}")
     print("=" * 50)
 
+    # Step 0: トレンドトピック取得（全本数共通）
+    print("\n📈 Step 0: トレンドトピック取得中...")
+    trending_topics = fetch_trending_topics(count=10)
+    if trending_topics:
+        print(f"  ✅ トレンド取得: {', '.join(trending_topics[:3])} ...")
+    else:
+        print("  ℹ️  トレンドなしで続行します")
+
     for i in range(count):
         if count > 1:
             print(f"\n▶ [{i + 1}/{count}本目]")
@@ -40,7 +50,7 @@ def run(
         try:
             # Step 1: スクリプト生成
             print("\n📝 Step 1: スクリプト生成中...")
-            script: ShortScript = generate_script(genre)
+            script: ShortScript = generate_script(genre, trending_topics=trending_topics)
             print(f"  トピック: {script.topic}")
             print(f"  Hook   : {script.hook[:30]}...")
             print(f"  Body   : {script.body[:30]}...")
@@ -74,6 +84,16 @@ def run(
                 genre=genre,
             )
 
+            # Step 4.5: サムネイル生成
+            print("\n🖼️  Step 4.5: サムネイル生成中...")
+            thumbnail_path = work_dir / "thumbnail.jpg"
+            generate_thumbnail(
+                topic=script.topic,
+                output_path=thumbnail_path,
+                genre=genre,
+            )
+            print(f"  ✅ サムネイル生成完了: {thumbnail_path.name}")
+
             # 完了
             print(f"\n✅ 動画生成完了！")
             print(f"   📁 {output_video}")
@@ -89,6 +109,7 @@ def run(
                     title=script.topic,
                     hashtags=script.hashtags,
                     privacy_status=privacy,
+                    thumbnail_path=thumbnail_path,
                 )
                 print(f"  ✅ アップロード完了！")
                 print(f"  🔗 {video_url}")

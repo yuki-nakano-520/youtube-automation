@@ -28,7 +28,10 @@ from config import (
     YOUTUBE_TOKEN_FILE,
 )
 
-SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
+SCOPES = [
+    "https://www.googleapis.com/auth/youtube.upload",
+    "https://www.googleapis.com/auth/youtube",
+]
 
 SHORTS_HASHTAG = "#Shorts"
 
@@ -75,6 +78,7 @@ def upload_short(
     hashtags: list[str],
     privacy_status: str = YOUTUBE_PRIVACY_STATUS,
     publish_at: str | None = None,
+    thumbnail_path: Path | None = None,
 ) -> str:
     """
     YouTube Shorts として動画をアップロードする。
@@ -144,6 +148,23 @@ def upload_short(
                 print(f"  進捗: {progress}%")
 
         video_id: str = response["id"]
+
+        # サムネイルアップロード（失敗しても動画アップロード自体は成功扱い）
+        if thumbnail_path and thumbnail_path.exists():
+            try:
+                thumb_media = MediaFileUpload(
+                    str(thumbnail_path),
+                    mimetype="image/jpeg",
+                    resumable=False,
+                )
+                youtube.thumbnails().set(
+                    videoId=video_id,
+                    media_body=thumb_media,
+                ).execute()
+                print("  🖼️  サムネイルアップロード完了")
+            except HttpError as thumb_err:
+                print(f"  ⚠️  サムネイルアップロード失敗（チャンネル未確認の可能性）: {thumb_err}")
+
         return f"https://www.youtube.com/shorts/{video_id}"
 
     except HttpError as e:
